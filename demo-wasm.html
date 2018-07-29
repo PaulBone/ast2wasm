@@ -1,0 +1,17 @@
+
+<html>
+  <head>
+    <title>Demo some wasm</title>
+  </head>
+  <body>
+    <h1>Demo!</h1>
+    <span id="output_span">
+    </span>
+    <script src="load.js"></script>
+    <script>
+      window.onload = () => {
+        load_wasm(document.getElementById("output_span"));
+      }
+    </script>
+  </body>
+</html>
