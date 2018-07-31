@@ -1,5 +1,26 @@
 
-function load_wasm(output) {
+function DownloadError(request) {
+    this.status = request.status;
+    this.statusText = request.statusText;
+    this.toString = () => `${this.status}: ${this.statusText}`;
+}
+
+function download_wasm(url) {
+    /*
+     * We can't use the Fetch API when the .wasm file is a local
+     * file (due to mime types).  So instead use XMLHttpRequest.
+     */
+    return new Promise((resolve, reject) => {
+        const request = new XMLHttpRequest();
+        request.open("GET", url);
+        request.onload = _ => resolve(request.response);
+        request.onerror = _ => reject(new DownloadError(request));
+        request.responseType = "arraybuffer";
+        request.send();
+    });
+}
+
+async function load_wasm(reportStatus) {
     /*
      * There's about three ways to load a wasm module right now.  Some are
      * "better" and others work in more browsers:
@@ -17,42 +38,29 @@ function load_wasm(output) {
      * file (due to mime types).  So I'll use the non-streaming async
      * method.
      */
-    output.innerText="Downloading...";
-    const state = {
-        error: false
-    };
-
-    const url = "file:///mnt/btrfs-hdd/dev/lambda2wasm/fib.wasm";
-    /*
-    // fetch belongs to the FetchAPI, it is not wasm-specific.
-    const request = fetch(url).catch(r => {
-        state.error = true;
-        output.innerText =
-            `Failed to download bytecode: ${r}`;
-    });
-    */
-    const request = new XMLHttpRequest();
-    request.open("GET", url);
-    request.onload = response => {
+    try {
+        reportStatus("Downloading...");
+        const url = "file:///mnt/btrfs-hdd/dev/lambda2wasm/fib.wasm";
+        const response = await download_wasm(url);
+        reportStatus("Compiling");
         const importObj = { imports: {} };
-        WebAssembly.instantiate(request.response, importObj).then(
-            result => {
-                output.innerText = "Ready";
-
-            },
-            error => {
-                if (!state.error) {
-                    state.error = true;
-                    output.innerText =
-                        `Failed to compile or instantiate bytecode: ${error}`;
-                }
-            });
-        };
-    request.onerror = error => {
-            state.error = true;
-            output.innerText =
-                `Failed to download bytecode: ${error}`;
-        };
-    request.responseType = "arraybuffer";
-    request.send();
+        result = await WebAssembly.instantiate(response, importObj);
+        reportStatus("Ready");
+        return result;
+    } catch(error) {
+        let message;
+        if (error instanceof DownloadError) {
+            message = `Failed to download bytecode`;
+        } else if (error instanceof WebAssembly.CompileError) {
+            message = `Failed to compile module: ${error}`;
+        } else if (error instanceof WebAssembly.LinkError) {
+            message = `Failed to link module: ${error}`;
+        } else if (error instanceof WebAssembly.RuntimeError) {
+            message = `Other WebAssembly error: ${error}`;
+        } else {
+            message = `Other error: ${error}`;
+        }
+        reportStatus(message);
+        throw new Error(message);
+    };
 }
