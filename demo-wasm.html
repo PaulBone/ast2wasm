@@ -4,13 +4,25 @@
     <title>Demo some wasm</title>
   </head>
   <body>
-    <h1>Demo!</h1>
-    <span id="output_span">
-    </span>
+    <h1>Web assembly demo</h1>
+    <div>
+      Status: <span id="status"></span><br/>
+      Input: <input type="text" id="input" name="input" value="32"/>
+          <button name="go" onclick="click_go();">Go</button><br/>
+      Output: <span id="output"></span><br/>
+    </div>
     <script src="load.js"></script>
     <script>
       window.onload = () => {
-        load_wasm(document.getElementById("output_span"));
+        window.fun = load_wasm(message => {
+            document.getElementById("status").innerText = message;
+          }
+        );
+      }
+      async function click_go() {
+        const input = document.getElementById("input"); 
+        const output = document.getElementById("output");
+        output.innerText = (await fun)(input.value);
       }
     </script>
   </body>

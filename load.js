@@ -46,7 +46,7 @@ async function load_wasm(reportStatus) {
         const importObj = { imports: {} };
         result = await WebAssembly.instantiate(response, importObj);
         reportStatus("Ready");
-        return result;
+        return result.instance.exports.fib;
     } catch(error) {
         let message;
         if (error instanceof DownloadError) {
