@@ -40,7 +40,8 @@ async function load_wasm(reportStatus) {
      */
     try {
         reportStatus("Downloading...");
-        const url = "file:///mnt/btrfs-hdd/dev/lambda2wasm/fib.wasm";
+        const url = location.href.slice(0, location.href.lastIndexOf('/')) +
+            "/fib.wasm";
         const response = await download_wasm(url);
         reportStatus("Compiling");
         const importObj = { imports: {} };
