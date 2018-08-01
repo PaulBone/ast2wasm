@@ -7,6 +7,23 @@ the web (and elsewhere).  So I'm writing a code generator that targets it.
 Copyright 2018 Paul Bone
 License: MIT
 
+== Building
+
+I tested this on Linux.
+
+You'll need the wabt git submodule, it contains the WebAssembly Binary
+Toolkit, mainly the wat2wasm tool,  after you checkout do:
+
+    $ git submodule init .
+    $ git submodule update --checkout .
+
+You should be able to build the toolkit and this with:
+
+    $ make
+
+It may need more tools or libraries installed such as cmake, C header files
+and libraries.
+
 == Links
 
 I used these resources:
