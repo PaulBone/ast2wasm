@@ -1,10 +1,10 @@
 
 WAT2WASM=wabt/build/wat2wasm
 
-%.wasm : %.wat
+%.wasm : %.wat wat2wasm
 	$(WAT2WASM) $<
 
-all : wat2wasm fib.wasm
+all : fib.wasm
 
 .PHONY: wat2wasm
 wat2wasm : .wat2wasm_guard
