@@ -44,3 +44,12 @@ While researching this I also found, but didn't use:
 * add ctof/ftoc example
 * Benchmark with JS and native code, use a suitable benchmark
 
+== FAQ
+
+Questions that people have asked me I will need to include in the
+presentation.
+
+ * script tag
+ * Loading and linking multiple modules
+
+
