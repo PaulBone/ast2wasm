@@ -1,3 +1,7 @@
 *.wasm
 *.swp
 .wat2wasm_guard
+dist
+cabal.sandbox.config
+.cabal-sandbox
+.sandbox_guard
