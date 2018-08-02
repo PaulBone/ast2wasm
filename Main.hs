@@ -1,5 +1,13 @@
 
+module Main where
+
+import Ast
+import Codegen
+
+ctof = Func "ctof" Public ["c"] $ Var "c"
+
+
 main :: IO ()
-main = return ()
+main = putStrLn $ show $ codegen $ ctof
 
 
