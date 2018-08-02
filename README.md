@@ -39,4 +39,8 @@ While researching this I also found, but didn't use:
 
 * [wasm Haskell package](https://hackage.haskell.org/package/wasm)
 
+== TODO
+
+* add ctof/ftoc example
+* Benchmark with JS and native code, use a suitable benchmark
 
