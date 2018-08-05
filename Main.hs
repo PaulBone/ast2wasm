@@ -5,7 +5,7 @@ import Ast
 import Codegen
 import Wat
 
-ctof = Func "ctof" Public ["c"] $ Var "c"
+ctof = Func "id" Public ["c"] $ Var "c"
 
 
 main :: IO ()

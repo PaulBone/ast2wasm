@@ -2,6 +2,7 @@
 module Wasm where
 
 data Func = Func {
+        name    :: Maybe String,
         type_   :: Type,
         args    :: [Type],
         body    :: [Instr]
