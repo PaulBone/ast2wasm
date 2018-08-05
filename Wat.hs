@@ -15,7 +15,7 @@ wasm2SExpr (W.Func rettype0 params0 instrs0) =
     where params = map (\p -> WFSList [WFSAtom Param, type2SExpr p])
                        params0
           rettype = WFSList [WFSAtom Result, type2SExpr rettype0]
-          instrs = instr2SExpr instrs0
+          instrs = WFSList $ map instr2SExpr instrs0
 
 instr2SExpr (W.Atomic instr) = atomicInstr2SExpr instr
 

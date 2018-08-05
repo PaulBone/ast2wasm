@@ -4,7 +4,7 @@ module Wasm where
 data Func = Func {
         type_   :: Type,
         args    :: [Type],
-        body    :: Instr
+        body    :: [Instr]
     }
     deriving Show
 
