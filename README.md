@@ -7,6 +7,15 @@ the web (and elsewhere).  So I'm writing a code generator that targets it.
 Copyright 2018 Paul Bone
 License: MIT
 
+
+== Dependencies
+
+You'll need some kind of C++ toolchain, whatever wabt (see below) requires.
+Plus Haskell and Cabal.  And a modern browser that support WebAssembly
+(pretty much anything current & mainstream except IE) I recommend Firefox
+;-).
+
+
 == Building
 
 I tested this on Linux.
@@ -17,12 +26,18 @@ Toolkit, mainly the wat2wasm tool,  after you checkout do:
     $ git submodule init .
     $ git submodule update --checkout .
 
+Part of the build includes downloading Haskell packages (into the local
+directory via cabal).  You'll need to update cabal package lists first:
+
+    $ cabal update
+
 You should be able to build the toolkit and this with:
 
     $ make
 
 It may need more tools or libraries installed such as cmake, C header files
 and libraries.
+
 
 == Links
 
@@ -39,10 +54,12 @@ While researching this I also found, but didn't use:
 
  * [wasm Haskell package](https://hackage.haskell.org/package/wasm)
 
+
 == TODO
 
  * add ctof/ftoc example
  * Benchmark with JS and native code, use a suitable benchmark
+
 
 == FAQ
 
