@@ -14,6 +14,7 @@ data Visability = Public
     deriving Show
 
 data Expr = Var String
-          | Lit32 Int
+          | Lit32 Integer -- using Integer makes some codegen easier
+                          -- (avoiding incidental complexity)
     deriving Show
 

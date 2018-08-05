@@ -15,6 +15,7 @@ data Instr = Atomic AtomicInstr
     deriving Show
 
 data AtomicInstr = GetLocal Int
+                 | ConstI Type Integer
                  | Return
     deriving Show
 
