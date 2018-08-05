@@ -3,7 +3,7 @@ module Wasm where
 
 data Func = Func {
         type_ :: Type,
-        locals :: [Type],
+        args :: [Type],
         body :: Instr
     }
     deriving Show
