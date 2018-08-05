@@ -28,21 +28,21 @@ and libraries.
 
 I used these resources:
 
-* [Web Assembly website](http://webassembly.org)
-* [Wasm text format and instruction list](https://webassembly.github.io/spec/core/text/instructions.html)
-* [Wasm text format examples](https://github.com/WebAssembly/spec/tree/master/test/core)
-* [MDN docs](https://developer.mozilla.org/en-US/docs/WebAssembly) Mostly
+ * [Web Assembly website](http://webassembly.org)
+ * [Wasm text format and instruction list](https://webassembly.github.io/spec/core/text/instructions.html)
+ * [Wasm text format examples](https://github.com/WebAssembly/spec/tree/master/test/core)
+ * [MDN docs](https://developer.mozilla.org/en-US/docs/WebAssembly) Mostly
   JavaScript API for loading modules.
-* [Wasm Assembler](https://github.com/webassembly/wabt)
+ * [Wasm Assembler](https://github.com/webassembly/wabt)
 
 While researching this I also found, but didn't use:
 
-* [wasm Haskell package](https://hackage.haskell.org/package/wasm)
+ * [wasm Haskell package](https://hackage.haskell.org/package/wasm)
 
 == TODO
 
-* add ctof/ftoc example
-* Benchmark with JS and native code, use a suitable benchmark
+ * add ctof/ftoc example
+ * Benchmark with JS and native code, use a suitable benchmark
 
 == FAQ
 
