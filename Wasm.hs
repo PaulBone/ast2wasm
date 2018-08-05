@@ -2,9 +2,9 @@
 module Wasm where
 
 data Func = Func {
-        type_ :: Type,
-        args :: [Type],
-        body :: Instr
+        type_   :: Type,
+        args    :: [Type],
+        body    :: Instr
     }
     deriving Show
 
