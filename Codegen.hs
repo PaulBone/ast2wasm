@@ -5,8 +5,9 @@ import qualified Ast
 import qualified Wasm as W
 import qualified Data.Map.Strict as Map
 
-codegen :: Ast.Func -> Maybe W.Func
-codegen = codegen_func
+codegen :: Ast.Module -> Maybe W.Module
+codegen (Ast.Module funcs0) = do funcs <- mapM codegen_func funcs0
+                                 return $ W.Module funcs
 
 codegen_func (Ast.Func name0 vis arg_names body) =
     do info <- foldl setup_arg (Just cginfo_init) arg_names

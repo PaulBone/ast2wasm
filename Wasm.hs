@@ -1,6 +1,8 @@
 
 module Wasm where
 
+data Module = Module [Func]
+
 data Func = Func {
         name    :: Maybe String,
         type_   :: Type,

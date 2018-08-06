@@ -7,18 +7,25 @@ import Data.SCargot.Repr
 
 import qualified Wasm as W
 
-writeWat :: W.Func -> String
+writeWat :: W.Module -> String
 writeWat = Text.unpack . sexpr2Text .  wasm2SExpr
 
-wasm2SExpr (W.Func name0 rettype0 params0 instrs0) =
-    WFSList $ [WFSAtom Func] ++ name ++ params ++ [rettype, instrs]
+----------------------------
+-- Convert Wasm to SExprs --
+----------------------------
+
+wasm2SExpr (W.Module funcs0) = WFSList ([WFSAtom Module] ++ funcs)
+    where funcs = map func2SExpr funcs0
+
+func2SExpr (W.Func name0 rettype0 params0 instrs0) =
+    WFSList $ [WFSAtom Func] ++ name ++ params ++ [rettype] ++ instrs
     where name = case name0 of
             Nothing -> []
             Just n -> [WFSList [WFSAtom Export, WFSAtom (Str n)]]
           params = map (\p -> WFSList [WFSAtom Param, type2SExpr p])
                        params0
           rettype = WFSList [WFSAtom Result, type2SExpr rettype0]
-          instrs = WFSList $ map instr2SExpr instrs0
+          instrs = map instr2SExpr instrs0
 
 instr2SExpr (W.Atomic instr) = atomicInstr2SExpr instr
 
@@ -54,7 +61,7 @@ instance Show Atom where
     show Param = "param"
     show Result = "result"
     show I32 = "i32"
-    show GetLocal = "get-local"
+    show GetLocal = "get_local"
     show ConstI32 = "i32.const"
     show Return = "return"
     show (Num n) = show n

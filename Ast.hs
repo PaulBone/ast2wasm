@@ -1,6 +1,8 @@
 
 module Ast where
 
+data Module = Module [Func]
+
 data Func = Func {
         name        :: String,
         visability  :: Visability,

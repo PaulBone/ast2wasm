@@ -5,8 +5,7 @@ import Ast
 import Codegen
 import Wat
 
-ctof = Func "id" Public ["c"] $ Var "c"
-
+ctof = Module [Func "id" Public ["c"] $ Var "c"]
 
 main :: IO ()
 main = case codegen ctof of
