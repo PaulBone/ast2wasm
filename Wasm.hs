@@ -17,7 +17,14 @@ data Type = I32
 data Instr = Atomic AtomicInstr
     deriving Show
 
-data AtomicInstr = GetLocal Int
+data AtomicInstr = Add Type
+                 | Sub Type
+                 | Mul Type
+                 | DivS Type
+                 | DivU Type
+                 | RemS Type
+                 | RemU Type
+                 | GetLocal Int
                  | ConstI Type Integer
                  | Return
     deriving Show

@@ -30,6 +30,13 @@ func2SExpr (W.Func name0 rettype0 params0 instrs0) =
 instr2SExpr (W.Atomic instr) = atomicInstr2SExpr instr
 
 atomicInstr2SExpr :: W.AtomicInstr -> WellFormedSExpr Atom
+atomicInstr2SExpr (W.Add W.I32) = WFSAtom AddI32
+atomicInstr2SExpr (W.Sub W.I32) = WFSAtom SubI32
+atomicInstr2SExpr (W.Mul W.I32) = WFSAtom MulI32
+atomicInstr2SExpr (W.DivS W.I32) = WFSAtom DivSI32
+atomicInstr2SExpr (W.DivU W.I32) = WFSAtom DivUI32
+atomicInstr2SExpr (W.RemS W.I32) = WFSAtom RemSI32
+atomicInstr2SExpr (W.RemU W.I32) = WFSAtom RemUI32
 atomicInstr2SExpr (W.GetLocal n) =
     WFSList [WFSAtom GetLocal, WFSAtom (Num $ fromIntegral n)]
 atomicInstr2SExpr (W.ConstI W.I32 n) =
@@ -48,6 +55,13 @@ data Atom = Module
           | Param
           | Result
           | I32
+          | AddI32
+          | SubI32
+          | MulI32
+          | DivSI32
+          | DivUI32
+          | RemSI32
+          | RemUI32
           | GetLocal
           | ConstI32
           | Return
@@ -61,6 +75,13 @@ instance Show Atom where
     show Param = "param"
     show Result = "result"
     show I32 = "i32"
+    show AddI32 = "i32.add"
+    show SubI32 = "i32.sub"
+    show MulI32 = "i32.mul"
+    show DivSI32 = "i32.div_s"
+    show DivUI32 = "i32.div_u"
+    show RemSI32 = "i32.rem_s"
+    show RemUI32 = "i32.rem_u"
     show GetLocal = "get_local"
     show ConstI32 = "i32.const"
     show Return = "return"

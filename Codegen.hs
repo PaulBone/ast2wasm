@@ -21,6 +21,16 @@ codegen_func (Ast.Func name0 vis arg_names body) =
             Ast.Public -> Just name0
             Ast.Private -> Nothing
 
+codegen_expr (Ast.BOp op left right) info =
+    do leftcode <- codegen_expr left info
+       rightcode <- codegen_expr right info
+       return $ leftcode ++ rightcode ++ opcode
+    where opcode = [W.Atomic ((case op of
+                                Ast.Add -> W.Add
+                                Ast.Subtract -> W.Sub
+                                Ast.Multiply -> W.Mul
+                                Ast.Divide -> W.DivS) W.I32)]
+
 codegen_expr (Ast.Var var) info = do num <- lookup_local info var
                                      return $ [W.Atomic $ W.GetLocal num]
 codegen_expr (Ast.Lit32 n) _ = return $ [W.Atomic $ W.ConstI W.I32 n]
