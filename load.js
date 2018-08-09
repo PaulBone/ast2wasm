@@ -41,14 +41,14 @@ async function load_wasm(reportStatus) {
     try {
         reportStatus("Downloading...");
         const url = location.href.slice(0, location.href.lastIndexOf('/')) +
-            "/fib.wasm";
+            "/test.wasm";
         const response = await download_wasm(url);
         reportStatus("Compiling");
         const importObj = { imports: {} };
         result = await WebAssembly.instantiate(response, importObj);
         reportStatus("Ready");
         // TODO Add error for unknown function.
-        return result.instance.exports.fib;
+        return result.instance.exports.ctof;
     } catch(error) {
         let message;
         if (error instanceof DownloadError) {

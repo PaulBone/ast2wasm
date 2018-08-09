@@ -2,6 +2,7 @@
 module Ast where
 
 data Module = Module [Func]
+    deriving Show
 
 data Func = Func {
         name        :: String,

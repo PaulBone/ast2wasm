@@ -1,22 +1,18 @@
 
 module Main where
 
-import Ast
+import System.Exit (die)
+
 import Codegen
+import Parse
 import Wat
 
-ctof = Module [
-        Func "id" Public ["x"] $ Var "x",
-        Func "ctof" Public ["c"] $
-            BOp Add
-                (BOp Divide
-                    (BOp Multiply (Var "c") (Lit32 9))
-                    (Lit32 5))
-                (Lit32 32)
-    ]
-
 main :: IO ()
-main = case codegen ctof of
-    Nothing -> putStrLn "Compilation error"
-    Just wasm -> putStrLn $ writeWat wasm
+main = do input <- getContents
+          case compile input of
+            Left e -> die $ "Error: " ++ e
+            Right wasm -> do putStrLn $ writeWat wasm
+
+compile input = do ast <- parseHL input
+                   codegen ast
 
