@@ -3,6 +3,7 @@ module Main where
 
 import System.Exit (die)
 
+import Check
 import Codegen
 import Parse
 import Wat
@@ -14,5 +15,6 @@ main = do input <- getContents
             Right wasm -> do putStrLn $ writeWat wasm
 
 compile input = do ast <- parseHL input
+                   check ast
                    codegen ast
 
