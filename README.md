@@ -57,8 +57,14 @@ While researching this I also found, but didn't use:
 
 ## TODO
 
+ + Calls
+ * Lets
+ + Case selections
+ + Basic type checks
  * add ctof/ftoc example
  * Benchmark with JS and native code, use a suitable benchmark
+ + Cons cells?
+ + Environments?
 
 
 ## FAQ
