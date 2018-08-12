@@ -1,5 +1,5 @@
 
-= lambda2wasm
+# lambda2wasm
 
 I'm experimenting with WebAssembly, an intermediate code representation for
 the web (and elsewhere).  So I'm writing a code generator that targets it.
@@ -8,7 +8,7 @@ Copyright 2018 Paul Bone
 License: MIT
 
 
-== Dependencies
+## Dependencies
 
 You'll need some kind of C++ toolchain, whatever wabt (see below) requires.
 Plus Haskell and Cabal.  And a modern browser that support WebAssembly
@@ -16,7 +16,7 @@ Plus Haskell and Cabal.  And a modern browser that support WebAssembly
 ;-).
 
 
-== Building
+## Building
 
 I tested this on Linux.
 
@@ -39,7 +39,7 @@ It may need more tools or libraries installed such as cmake, C header files
 and libraries.
 
 
-== Links
+## Links
 
 I used these resources:
 
@@ -55,13 +55,13 @@ While researching this I also found, but didn't use:
  * [wasm Haskell package](https://hackage.haskell.org/package/wasm)
 
 
-== TODO
+## TODO
 
  * add ctof/ftoc example
  * Benchmark with JS and native code, use a suitable benchmark
 
 
-== FAQ
+## FAQ
 
 Questions that people have asked me I will need to include in the
 presentation.
