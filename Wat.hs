@@ -37,6 +37,8 @@ atomicInstr2SExpr (W.DivS W.I32) = WFSAtom DivSI32
 atomicInstr2SExpr (W.DivU W.I32) = WFSAtom DivUI32
 atomicInstr2SExpr (W.RemS W.I32) = WFSAtom RemSI32
 atomicInstr2SExpr (W.RemU W.I32) = WFSAtom RemUI32
+atomicInstr2SExpr (W.Call n) =
+    WFSList [WFSAtom Call, WFSAtom (Num $ fromIntegral n)]
 atomicInstr2SExpr (W.GetLocal n) =
     WFSList [WFSAtom GetLocal, WFSAtom (Num $ fromIntegral n)]
 atomicInstr2SExpr (W.ConstI W.I32 n) =
@@ -62,6 +64,7 @@ data Atom = Module
           | DivUI32
           | RemSI32
           | RemUI32
+          | Call
           | GetLocal
           | ConstI32
           | Return
@@ -82,6 +85,7 @@ instance Show Atom where
     show DivUI32 = "i32.div_u"
     show RemSI32 = "i32.rem_s"
     show RemUI32 = "i32.rem_u"
+    show Call = "call"
     show GetLocal = "get_local"
     show ConstI32 = "i32.const"
     show Return = "return"

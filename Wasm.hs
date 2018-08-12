@@ -24,6 +24,7 @@ data AtomicInstr = Add Type
                  | DivU Type
                  | RemS Type
                  | RemU Type
+                 | Call Int
                  | GetLocal Int
                  | ConstI Type Integer
                  | Return
