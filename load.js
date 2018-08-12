@@ -20,7 +20,7 @@ function download_wasm(url) {
     });
 }
 
-async function load_wasm(reportStatus) {
+async function load_wasm(filename, reportStatus) {
     /*
      * There's about three ways to load a wasm module right now.  Some are
      * "better" and others work in more browsers:
@@ -41,14 +41,13 @@ async function load_wasm(reportStatus) {
     try {
         reportStatus("Downloading...");
         const url = location.href.slice(0, location.href.lastIndexOf('/')) +
-            "/test.wasm";
+            "/" + filename;
         const response = await download_wasm(url);
         reportStatus("Compiling");
         const importObj = { imports: {} };
         result = await WebAssembly.instantiate(response, importObj);
         reportStatus("Ready");
-        // TODO Add error for unknown function.
-        return result.instance.exports.ctof;
+        return result.instance.exports;
     } catch(error) {
         let message;
         if (error instanceof DownloadError) {

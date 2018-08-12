@@ -1,11 +1,14 @@
 
 WAT2WASM=wabt/build/wat2wasm
 
+.PHONY: all
+all : ctof.wasm fib.wasm .cabal-sandbox/bin/ast2wasm
+
 %.wasm : %.wat wat2wasm
 	$(WAT2WASM) $<
 
-.PHONY: all
-all : fib.wasm .cabal-sandbox/bin/ast2wasm
+%.wat : %.hl .cabal-sandbox/bin/ast2wasm
+	.cabal-sandbox/bin/ast2wasm < $< > $@
 
 .PHONY: wat2wasm
 wat2wasm : .wat2wasm_guard

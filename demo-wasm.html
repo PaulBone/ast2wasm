@@ -14,7 +14,7 @@
     <script src="load.js"></script>
     <script>
       window.onload = () => {
-        window.fun = load_wasm(message => {
+        window.ctof_module = load_wasm("ctof.wasm", message => {
             document.getElementById("status").innerText = message;
           }
         );
@@ -22,7 +22,7 @@
       async function click_go() {
         const input = document.getElementById("input"); 
         const output = document.getElementById("output");
-        output.innerText = (await fun)(input.value);
+        output.innerText = (await ctof_module).ctof(input.value);
       }
     </script>
   </body>
