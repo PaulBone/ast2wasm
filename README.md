@@ -7,6 +7,16 @@ the web (and elsewhere).  So I'm writing a code generator that targets it.
 Copyright 2018 Paul Bone
 License: MIT
 
+This repository contains a simple (and naive) compiler for a functional
+language, the compiler is written in Haskell.  The most interesting file is
+probably Codegen.hs which transforms the AST (Ast.hs) into WebAssembly
+(Wasm.hs).  The WebAssembly is written out in its text format and assembled
+with the wat2wasm external tool.
+
+Once you build the project you can open Demo-wasm.html in your web browser
+and try it out.  Several example programs are in the files with the .hl
+file extension.
+
 
 ## Dependencies
 
@@ -57,7 +67,7 @@ While researching this I also found, but didn't use:
 
 ## TODO
 
- + Calls
+ * Make syntax less ugly, even if it's all prefix notation
  * Lets
  + Case selections
  + Basic type checks
