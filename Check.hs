@@ -1,24 +1,12 @@
 
 module Check (check) where
 
-import Data.List.Unique (repeated)
-
 import Ast
 
+--
+-- Here's where you'd add type checking and other semantic checks
+--
 check :: Module -> Either String ()
-check (Module funcs) =
-    do let funcNames = map name funcs
-       case repeated funcNames of
-            (repName:_) -> error $ 
-                "Duplicate function name '" ++ repName ++ "'"
-            [] -> okay
-       _ <- mapM checkFunc funcs
-       okay
-
-checkFunc :: Func -> Either String ()
-checkFunc func = case repeated (args func) of
-                    (repName:_) -> error $
-                        "Duplicate function parameter: '" ++ repName ++ "'"
-                    [] -> okay
+check _ = okay
 
 okay = return ()
