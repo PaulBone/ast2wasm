@@ -29,17 +29,19 @@ funcP = try $ do vis <- option Private (public >> return Public)
                  eol
                  return $ Func fname vis fargs fbody
 
-expr = choice [num, var, bopexpr]
+expr = choice [try num, try call, try var, try bopexpr]
     where num = do n <- number
                    return $ Lit32 n
           var = do v <- ident
                    return $ Var v
-          bopexpr = do openParen
-                       e1 <- expr
-                       op <- bop
-                       e2 <- expr
-                       closeParen
-                       return $ BOp op e1 e2
+          call = do callee <- ident
+                    call_args <- between openParen closeParen $ sepBy expr comma
+                    return $ Call callee call_args
+          bopexpr = do between openParen closeParen $
+                        do e1 <- expr
+                           op <- bop
+                           e2 <- expr
+                           return $ BOp op e1 e2
           bop = do choice [plus >> return Add,
                            minus >> return Subtract,
                            asterisk >> return Multiply,

@@ -6,6 +6,7 @@ module Tokenise (tokenise,
                  minus,
                  asterisk,
                  slash,
+                 comma,
                  openParen,
                  closeParen,
                  ident,
@@ -21,6 +22,7 @@ data Token = Public
            | Minus
            | Asterisk
            | Slash
+           | Comma
            | OpenParan
            | CloseParan
            | Ident String
@@ -44,6 +46,7 @@ tokeniser =
                                         sym '-' Minus,
                                         sym '*' Asterisk,
                                         sym '/' Slash,
+                                        sym ',' Comma,
                                         sym '(' OpenParan,
                                         sym ')' CloseParan,
                                         ident_tok,
@@ -97,6 +100,9 @@ asterisk = hlToken Asterisk
 
 slash :: Stream s Identity TokenPos => Parsec s u ()
 slash = hlToken Slash
+
+comma :: Stream s Identity TokenPos => Parsec s u ()
+comma = hlToken Comma
 
 openParen :: Stream s Identity TokenPos => Parsec s u ()
 openParen = hlToken OpenParan
