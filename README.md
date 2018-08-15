@@ -67,7 +67,6 @@ While researching this I also found, but didn't use:
 
 ## TODO
 
- * Make syntax less ugly, even if it's all prefix notation
  * Lets
  + Case selections
  + Basic type checks
