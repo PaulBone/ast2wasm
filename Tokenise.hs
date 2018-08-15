@@ -39,7 +39,7 @@ tokenise input = case parse tokeniser "" input of
                     Left e -> Left $ show e
 
 tokeniser =
-    do skipWS
+    do skipWSOrComment
        toks <- many $ do tok <- choice [symStr "public" Public,
                                         sym '=' Equals,
                                         sym '+' Plus,
@@ -53,7 +53,7 @@ tokeniser =
                                         number_tok,
                                         sym '\n' EOL]
 
-                         skipWS
+                         skipWSOrComment
                          return tok
        eof
        return toks
@@ -67,7 +67,11 @@ number_tok = do num <- many1 digit
                 pos <- getPosition
                 return $ (TokenPos (Num (read num)) pos)
 
-skipWS = skipMany $ oneOf " \t"
+skipWSOrComment = skipMany (ws <|> comment)
+    where ws = oneOf " \t" >> return ()
+          comment = try $ do _ <- string "--"
+                             _ <- manyTill anyChar endOfLine
+                             return ()
 
 symStr str symbol = do _ <- string str
                        pos <- getPosition
