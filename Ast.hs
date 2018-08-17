@@ -28,5 +28,11 @@ data Op = Add
         | Subtract
         | Multiply
         | Divide
+        | LessThan
+        | LessThanEqualTo
+        | GreaterThan
+        | GreaterThanEqualTo
+        | NotEqual
+        | Equal
     deriving Show
 

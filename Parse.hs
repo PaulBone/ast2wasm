@@ -49,7 +49,13 @@ bop_expr = do e1 <- expr0
     where bop = do choice [plus >> return Add,
                            minus >> return Subtract,
                            asterisk >> return Multiply,
-                           slash >> return Divide]
+                           slash >> return Divide,
+                           leftAngle >> return LessThan,
+                           leftAngleEquals >> return LessThanEqualTo,
+                           rightAngle >> return GreaterThan,
+                           rightAngleEquals >> return GreaterThanEqualTo,
+                           bangEquals >> return NotEqual,
+                           doubleEquals >> return Equal]
 
 expr0 = choice [num, try call, var, parens_expr]
     where num = do n <- number

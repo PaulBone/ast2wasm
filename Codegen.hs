@@ -104,7 +104,17 @@ codegen_expr info (Ast.BOp op left right) =
                                 Ast.Add -> W.Add
                                 Ast.Subtract -> W.Sub
                                 Ast.Multiply -> W.Mul
-                                Ast.Divide -> W.DivS) W.I32)]
+                                Ast.Divide -> W.DivS
+                                -- Note that without a type system we must
+                                -- use I32 since that's what the relational
+                                -- instructions return.
+                                Ast.LessThan -> W.LtS
+                                Ast.LessThanEqualTo -> W.LeS
+                                Ast.GreaterThan -> W.GtS
+                                Ast.GreaterThanEqualTo -> W.GeS
+                                Ast.NotEqual -> W.Ne
+                                Ast.Equal -> W.Eq)
+                              W.I32)]
 
 codegen_expr info (Ast.Let var in_expr let_expr) =
     do in_code <- codegen_expr info in_expr

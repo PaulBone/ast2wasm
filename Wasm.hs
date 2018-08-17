@@ -25,6 +25,16 @@ data AtomicInstr = Add Type
                  | DivU Type
                  | RemS Type
                  | RemU Type
+                 | LtS Type
+                 | LtU Type
+                 | LeS Type
+                 | LeU Type
+                 | GtS Type
+                 | GtU Type
+                 | GeS Type
+                 | GeU Type
+                 | Ne Type
+                 | Eq Type
                  | Call Int
                  | GetLocal Int
                  | SetLocal Int

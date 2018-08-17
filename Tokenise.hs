@@ -8,6 +8,12 @@ module Tokenise (tokenise,
                  minus,
                  asterisk,
                  slash,
+                 leftAngle,
+                 rightAngle,
+                 leftAngleEquals,
+                 rightAngleEquals,
+                 bangEquals,
+                 doubleEquals,
                  comma,
                  openParen,
                  closeParen,
@@ -26,6 +32,12 @@ data Token = Public
            | Minus
            | Asterisk
            | Slash
+           | LeftAngle
+           | RightAngle
+           | LeftAngleEquals
+           | RightAngleEquals
+           | BangEquals
+           | DoubleEquals
            | Comma
            | OpenParan
            | CloseParan
@@ -49,11 +61,17 @@ tokeniser =
                                         try $ symStr "in" In,
                                         try ident_tok,
                                         try number_tok,
+                                        try $ symStr "<=" LeftAngleEquals,
+                                        try $ symStr ">=" RightAngleEquals,
+                                        try $ symStr "!=" BangEquals,
+                                        try $ symStr "==" DoubleEquals,
                                         sym '=' Equals,
                                         sym '+' Plus,
                                         sym '-' Minus,
                                         sym '*' Asterisk,
                                         sym '/' Slash,
+                                        sym '<' LeftAngle,
+                                        sym '>' RightAngle,
                                         sym ',' Comma,
                                         sym '(' OpenParan,
                                         sym ')' CloseParan,
@@ -117,6 +135,24 @@ asterisk = hlToken Asterisk
 
 slash :: Stream s Identity TokenPos => Parsec s u ()
 slash = hlToken Slash
+
+leftAngle :: Stream s Identity TokenPos => Parsec s u ()
+leftAngle = hlToken LeftAngle
+
+rightAngle :: Stream s Identity TokenPos => Parsec s u ()
+rightAngle = hlToken RightAngle
+
+leftAngleEquals :: Stream s Identity TokenPos => Parsec s u ()
+leftAngleEquals = hlToken LeftAngleEquals
+
+rightAngleEquals :: Stream s Identity TokenPos => Parsec s u ()
+rightAngleEquals = hlToken RightAngleEquals
+
+bangEquals :: Stream s Identity TokenPos => Parsec s u ()
+bangEquals = hlToken BangEquals
+
+doubleEquals :: Stream s Identity TokenPos => Parsec s u ()
+doubleEquals = hlToken DoubleEquals
 
 comma :: Stream s Identity TokenPos => Parsec s u ()
 comma = hlToken Comma

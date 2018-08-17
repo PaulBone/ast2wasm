@@ -41,6 +41,16 @@ atomicInstr2SExpr (W.DivS W.I32) = WFSAtom DivSI32
 atomicInstr2SExpr (W.DivU W.I32) = WFSAtom DivUI32
 atomicInstr2SExpr (W.RemS W.I32) = WFSAtom RemSI32
 atomicInstr2SExpr (W.RemU W.I32) = WFSAtom RemUI32
+atomicInstr2SExpr (W.LtS W.I32) = WFSAtom LtSI32
+atomicInstr2SExpr (W.LtU W.I32) = WFSAtom LtUI32
+atomicInstr2SExpr (W.LeS W.I32) = WFSAtom LeSI32
+atomicInstr2SExpr (W.LeU W.I32) = WFSAtom LeUI32
+atomicInstr2SExpr (W.GtS W.I32) = WFSAtom GtSI32
+atomicInstr2SExpr (W.GtU W.I32) = WFSAtom GtUI32
+atomicInstr2SExpr (W.GeS W.I32) = WFSAtom GeSI32
+atomicInstr2SExpr (W.GeU W.I32) = WFSAtom GeUI32
+atomicInstr2SExpr (W.Ne W.I32) = WFSAtom NeI32
+atomicInstr2SExpr (W.Eq W.I32) = WFSAtom EqI32
 atomicInstr2SExpr (W.Call n) =
     WFSList [WFSAtom Call, WFSAtom (Num $ fromIntegral n)]
 atomicInstr2SExpr (W.GetLocal n) =
@@ -71,6 +81,16 @@ data Atom = Module
           | DivUI32
           | RemSI32
           | RemUI32
+          | LtSI32
+          | LtUI32
+          | LeSI32
+          | LeUI32
+          | GtSI32
+          | GtUI32
+          | GeSI32
+          | GeUI32
+          | NeI32
+          | EqI32
           | Call
           | GetLocal
           | SetLocal
@@ -94,6 +114,16 @@ instance Show Atom where
     show DivUI32 = "i32.div_u"
     show RemSI32 = "i32.rem_s"
     show RemUI32 = "i32.rem_u"
+    show LtSI32 = "i32.lt_s"
+    show LtUI32 = "i32.lt_u"
+    show LeSI32 = "i32.le_s"
+    show LeUI32 = "i32.le_u"
+    show GtSI32 = "i32.gt_s"
+    show GtUI32 = "i32.gt_u"
+    show GeSI32 = "i32.ge_s"
+    show GeUI32 = "i32.ge_u"
+    show NeI32 = "i32.ne"
+    show EqI32 = "i32.eq"
     show Call = "call"
     show GetLocal = "get_local"
     show SetLocal = "set_local"
