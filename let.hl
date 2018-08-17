@@ -1,0 +1,3 @@
+
+public let_example a = let b = a * a in b + b
+

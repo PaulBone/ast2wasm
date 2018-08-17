@@ -2,7 +2,12 @@
 WAT2WASM=wabt/build/wat2wasm
 
 .PHONY: all
-all : ctof.wasm fib_handwritten.wasm calls.wasm .cabal-sandbox/bin/ast2wasm
+all : ctof.wasm \
+	fib_handwritten.wasm \
+	calls.wasm \
+	quad.wasm \
+	let.wasm \
+	.cabal-sandbox/bin/ast2wasm
 
 %.wasm : %.wat wat2wasm
 	$(WAT2WASM) $<

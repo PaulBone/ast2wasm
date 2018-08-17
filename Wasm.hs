@@ -7,6 +7,7 @@ data Func = Func {
         name    :: Maybe String,
         type_   :: Type,
         args    :: [Type],
+        locals  :: [Type],
         body    :: [Instr]
     }
     deriving Show
@@ -26,6 +27,7 @@ data AtomicInstr = Add Type
                  | RemU Type
                  | Call Int
                  | GetLocal Int
+                 | SetLocal Int
                  | ConstI Type Integer
                  | Return
     deriving Show

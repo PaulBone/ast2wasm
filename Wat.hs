@@ -17,13 +17,17 @@ writeWat = Text.unpack . sexpr2Text .  wasm2SExpr
 wasm2SExpr (W.Module funcs0) = WFSList ([WFSAtom Module] ++ funcs)
     where funcs = map func2SExpr funcs0
 
-func2SExpr (W.Func name0 rettype0 params0 instrs0) =
-    WFSList $ [WFSAtom Func] ++ name ++ params ++ [rettype] ++ instrs
+func2SExpr (W.Func name0 rettype0 params0 locals0 instrs0) =
+    WFSList $ [WFSAtom Func] ++ name ++ params ++ [rettype] ++ locals ++
+        instrs
     where name = case name0 of
             Nothing -> []
             Just n -> [WFSList [WFSAtom Export, WFSAtom (Str n)]]
-          params = map (\p -> WFSList [WFSAtom Param, type2SExpr p])
-                       params0
+          params = typeList Param params0
+          locals = typeList Local locals0
+          typeList atom l = case l of
+                            _:_ -> [WFSList $ (WFSAtom atom) : map type2SExpr l]
+                            [] -> []
           rettype = WFSList [WFSAtom Result, type2SExpr rettype0]
           instrs = map instr2SExpr instrs0
 
@@ -41,6 +45,8 @@ atomicInstr2SExpr (W.Call n) =
     WFSList [WFSAtom Call, WFSAtom (Num $ fromIntegral n)]
 atomicInstr2SExpr (W.GetLocal n) =
     WFSList [WFSAtom GetLocal, WFSAtom (Num $ fromIntegral n)]
+atomicInstr2SExpr (W.SetLocal n) =
+    WFSList [WFSAtom SetLocal, WFSAtom (Num $ fromIntegral n)]
 atomicInstr2SExpr (W.ConstI W.I32 n) =
     WFSList [WFSAtom ConstI32, WFSAtom (Num n)]
 atomicInstr2SExpr W.Return = WFSAtom Return
@@ -55,6 +61,7 @@ data Atom = Module
           | Func
           | Export
           | Param
+          | Local
           | Result
           | I32
           | AddI32
@@ -66,6 +73,7 @@ data Atom = Module
           | RemUI32
           | Call
           | GetLocal
+          | SetLocal
           | ConstI32
           | Return
           | Num Integer
@@ -76,6 +84,7 @@ instance Show Atom where
     show Func = "func"
     show Export = "export"
     show Param = "param"
+    show Local = "local"
     show Result = "result"
     show I32 = "i32"
     show AddI32 = "i32.add"
@@ -87,6 +96,7 @@ instance Show Atom where
     show RemUI32 = "i32.rem_u"
     show Call = "call"
     show GetLocal = "get_local"
+    show SetLocal = "set_local"
     show ConstI32 = "i32.const"
     show Return = "return"
     show (Num n) = show n

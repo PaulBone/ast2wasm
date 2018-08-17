@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Tokenise (tokenise,
                  public,
+                 let_,
+                 in_,
                  equals,
                  plus,
                  minus,
@@ -17,6 +19,8 @@ import Data.Functor.Identity (Identity)
 import Text.Parsec
 
 data Token = Public
+           | Let
+           | In
            | Equals
            | Plus
            | Minus
@@ -40,7 +44,11 @@ tokenise input = case parse tokeniser "" input of
 
 tokeniser =
     do skipWSOrComment
-       toks <- many $ do tok <- choice [symStr "public" Public,
+       toks <- many $ do tok <- choice [try $ symStr "public" Public,
+                                        try $ symStr "let" Let,
+                                        try $ symStr "in" In,
+                                        try ident_tok,
+                                        try number_tok,
                                         sym '=' Equals,
                                         sym '+' Plus,
                                         sym '-' Minus,
@@ -49,8 +57,6 @@ tokeniser =
                                         sym ',' Comma,
                                         sym '(' OpenParan,
                                         sym ')' CloseParan,
-                                        ident_tok,
-                                        number_tok,
                                         sym '\n' EOL]
 
                          skipWSOrComment
@@ -74,6 +80,7 @@ skipWSOrComment = skipMany (ws <|> comment)
                              return ()
 
 symStr str symbol = do _ <- string str
+                       notFollowedBy (alphaNum <|> char '_')
                        pos <- getPosition
                        return $ TokenPos symbol pos
 
@@ -89,6 +96,12 @@ hlToken t = token showToken nextPos testTok
 
 public :: Stream s Identity TokenPos => Parsec s u ()
 public = hlToken Public
+
+let_ :: Stream s Identity TokenPos => Parsec s u ()
+let_ = hlToken Let
+
+in_ :: Stream s Identity TokenPos => Parsec s u ()
+in_ = hlToken In
 
 equals :: Stream s Identity TokenPos => Parsec s u ()
 equals = hlToken Equals

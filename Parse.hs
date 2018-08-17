@@ -1,5 +1,5 @@
 
-module Parse (parseHL) where
+module Parse (parseHL, expr) where
 
 import Text.Parsec
 
@@ -29,13 +29,23 @@ funcP = try $ do vis <- option Private (public >> return Public)
                  eol
                  return $ Func fname vis fargs fbody
 
-expr = do e1 <- expr0
-          -- This could be a binary operation, or just a simple expression
-          -- below.  This will return e1 if the parser binary operation
-          -- parse fails.
-          option e1 $ do op <- bop
-                         e2 <- expr
-                         return $ BOp op e1 e2
+expr = let_in_expr <|> bop_expr
+
+let_in_expr = do let_
+                 var <- ident
+                 equals
+                 let_expr <- expr
+                 in_
+                 in_expr <- expr
+                 return $ Let var let_expr in_expr
+
+bop_expr = do e1 <- expr0
+              -- This could be a binary operation, or just a simple
+              -- expression below.  This will return e1 if the parser binary
+              -- operation parse fails.
+              option e1 $ do op <- bop
+                             e2 <- bop_expr
+                             return $ BOp op e1 e2
     where bop = do choice [plus >> return Add,
                            minus >> return Subtract,
                            asterisk >> return Multiply,

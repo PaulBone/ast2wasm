@@ -1,0 +1,13 @@
+
+-- The quadratic formula, an example of "let".  Which is not strictly needed
+-- but it demonstrates referring to older things in the code generator and
+-- it's useful.
+
+-- We can't return multiple values or even tuple multiple values, so just
+-- return the first answer.
+
+public quad a b c = let b24acsq = sqrt((b*b) - (4 * a * c)) in let ans1 = ((0-1 * b) + b24acsq) / (2*a) in let ans2 = ((0-1 * b) - b24acsq) / (2*a) in ans1
+
+-- This also doesn't work because sqrt isn't supported.
+sqrt x = x
+

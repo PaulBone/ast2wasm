@@ -67,7 +67,6 @@ While researching this I also found, but didn't use:
 
 ## TODO
 
- * Lets
  + Case selections
  + Basic type checks
  * add ctof/ftoc example
