@@ -22,8 +22,10 @@ codegen (Ast.Module funcs0) =
 codegen_func :: S.Symtab String -> Ast.Func -> Either String W.Func
 codegen_func func_syms (Ast.Func name0 vis arg_names body0) =
     do arg_syms <- foldM setup_arg S.init arg_names
-       let (body, locals_syms) = runState (build_locals body0) arg_syms
-       body_instrs0 <- codegen_expr (CGInfo func_syms locals_syms) body
+       let (body, locals_syms0) = runState (build_locals body0) arg_syms
+       (body_instrs0, info) <- runStateT (codegen_expr body)
+                                      (CGInfo func_syms locals_syms0)
+       let locals_syms = cgi_locals info
        let body_instrs = body_instrs0 ++ [W.Atomic W.Return]
        let arg_types = take (S.num arg_syms) i32s
        let local_types = take ((S.num locals_syms) - (S.num arg_syms)) i32s
@@ -56,6 +58,12 @@ build_locals (Ast.Let var0 let0 in0) =
        let_ <- build_locals let0
        in_ <- build_locals in2
        return (Ast.Let var let_ in_)
+build_locals (Ast.Case switch_expr0 cases0) =
+    do switch_expr <- build_locals switch_expr0
+       cases <- mapM build_case cases0
+       return $ Ast.Case switch_expr cases
+    where build_case (Ast.PatExpr pat expr0) =
+            (build_locals expr0 >>= (return . (Ast.PatExpr pat)))
 build_locals (Ast.Call callee args0) =
     do args <- mapM build_locals args0
        return $ Ast.Call callee args
@@ -76,16 +84,19 @@ s_new_var = do s0 <- get
                let (v, s) = S.new_var new_sym s0
                put s
                return v
-    where new_sym symid = "V_" ++ (show symid)
 
 rename_expr old new (Ast.BOp op left0 right0) =
     Ast.BOp op (rename_expr old new left0) (rename_expr old new right0)
-rename_expr old new (Ast.Let letvar let0 in0) =
-    let let_ = if old == letvar
-                then let0
-                else rename_expr old new let0
-        in_ = rename_expr old new in0
-    in Ast.Let letvar let_ in_
+rename_expr old new (Ast.Let letvar let0 in0) = Ast.Let letvar let_ in_
+    where let_ = if old == letvar
+                    then let0
+                    else rename_expr old new let0
+          in_ = rename_expr old new in0
+rename_expr old new (Ast.Case expr0 cases0) = Ast.Case expr cases
+    where expr = rename_expr old new expr0
+          cases = map rename_case cases0
+          rename_case (Ast.PatExpr p pexpr) =
+            Ast.PatExpr p (rename_expr old new pexpr)
 rename_expr old new (Ast.Call callee args) =
     Ast.Call callee (map (rename_expr old new) args)
 rename_expr old new (Ast.Var var) =
@@ -95,10 +106,11 @@ rename_expr _ _ (Ast.Lit32 n) = Ast.Lit32 n
 -- Generate code
 ----------------
 
-codegen_expr :: CGInfo -> Ast.Expr -> Either String [W.Instr]
-codegen_expr info (Ast.BOp op left right) =
-    do leftcode <- codegen_expr info left
-       rightcode <- codegen_expr info right
+codegen_expr :: Ast.Expr ->
+    StateT CGInfo (Either String) [W.Instr]
+codegen_expr (Ast.BOp op left right) =
+    do leftcode <- codegen_expr left
+       rightcode <- codegen_expr right
        return $ leftcode ++ rightcode ++ opcode
     where opcode = [W.Atomic ((case op of
                                 Ast.Add -> W.Add
@@ -116,27 +128,65 @@ codegen_expr info (Ast.BOp op left right) =
                                 Ast.Equal -> W.Eq)
                               W.I32)]
 
-codegen_expr info (Ast.Let var in_expr let_expr) =
-    do in_code <- codegen_expr info in_expr
+codegen_expr (Ast.Let var in_expr let_expr) =
+    do in_code <- codegen_expr in_expr
+       info <- get
        set_code <- case S.lookup (cgi_locals info) var of
            Just local_id -> return $ W.Atomic $ W.SetLocal local_id
-           Nothing -> Left $ "No such local variable '" ++ var ++ "'"
-       let_code <- codegen_expr info let_expr
+           Nothing -> fail $ "No such local variable '" ++ var ++ "'"
+       let_code <- codegen_expr let_expr
        return $ in_code ++ [set_code] ++ let_code
 
-codegen_expr info (Ast.Call callee args) =
-    do argscode <- liftM concat $ mapM (codegen_expr info) args
+codegen_expr (Ast.Case expr cases) =
+    do exprcode <- codegen_expr expr
+       info0 <- get
+       let (varname, locals) = S.new_var new_sym (cgi_locals info0)
+       let var = maybe (error "Fresh var not found") id $
+                    S.lookup locals varname
+       let setcode = [W.Atomic $ W.SetLocal var]
+       let info = info0 { cgi_locals = locals }
+       put info
+       casecodes <- mapM (codegen_case var) cases
+       let casescode = make_if_chain casecodes
+       return $ exprcode ++ setcode ++ casescode
+
+codegen_expr (Ast.Call callee args) =
+    do argscode <- liftM concat $ mapM codegen_expr args
+       info <- get
        callcode <- case S.lookup (cgi_funcs info) callee of
            Just num -> return $ [W.Atomic $ W.Call num]
-           Nothing -> Left $ "No such function name '" ++ callee ++ "'"
+           Nothing -> fail $ "No such function name '" ++ callee ++ "'"
        return $ argscode ++ callcode
 
-codegen_expr info (Ast.Var var) =
-    case S.lookup (cgi_locals info) var of
-        Just num -> return $ [W.Atomic $ W.GetLocal num]
-        Nothing -> Left $ "No such variable: " ++ var
+codegen_expr (Ast.Var var) =
+    do info <- get
+       case S.lookup (cgi_locals info) var of
+            Just num -> return $ [W.Atomic $ W.GetLocal num]
+            Nothing -> fail $ "No such variable: " ++ var
 
-codegen_expr _ (Ast.Lit32 n) = return $ [W.Atomic $ W.ConstI W.I32 n]
+codegen_expr (Ast.Lit32 n) = return $ [W.Atomic $ W.ConstI W.I32 n]
+
+data CaseCode = CaseCode
+                    -- Instructions to prepare and test for the condition,
+                    -- laving an I32 on the top-of-stack.
+                    [W.Instr]
+                    -- True block (code to execute if true).
+                    [W.Instr]
+
+codegen_case val (Ast.PatExpr pat expr) =
+    do block_instrs <- codegen_expr expr
+       return $ CaseCode (make_prep_test_instrs pat) block_instrs
+    where make_prep_test_instrs (Ast.Number n) =
+            map W.Atomic [W.GetLocal val, W.ConstI W.I32 n, W.Eq W.I32]
+          make_prep_test_instrs Ast.Wildcard =
+            [W.Atomic $ W.ConstI W.I32 1]
+
+make_if_chain :: [CaseCode] -> [W.Instr]
+make_if_chain [] = error "Empty case list"
+make_if_chain ((CaseCode _test instrs):[]) = instrs
+make_if_chain ((CaseCode test instrs):x:xs) =
+    let elsecode = make_if_chain (x:xs) in
+        test ++ [W.If [W.I32] instrs elsecode]
 
 ---------------------------------------------------------------------------
 
@@ -144,4 +194,6 @@ data CGInfo = CGInfo {
         cgi_funcs       :: S.Symtab String,
         cgi_locals      :: S.Symtab String
     }
+
+new_sym symid = "V_" ++ (show symid)
 

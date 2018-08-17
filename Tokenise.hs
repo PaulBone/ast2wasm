@@ -3,7 +3,10 @@ module Tokenise (tokenise,
                  public,
                  let_,
                  in_,
+                 case_,
+                 of_,
                  equals,
+                 rightArrow,
                  plus,
                  minus,
                  asterisk,
@@ -18,6 +21,7 @@ module Tokenise (tokenise,
                  openParen,
                  closeParen,
                  ident,
+                 underscore,
                  number,
                  eol) where
 
@@ -27,7 +31,10 @@ import Text.Parsec
 data Token = Public
            | Let
            | In
+           | Case
+           | Of
            | Equals
+           | RightArrow
            | Plus
            | Minus
            | Asterisk
@@ -41,6 +48,7 @@ data Token = Public
            | Comma
            | OpenParan
            | CloseParan
+           | Underscore
            | Ident String
            | Num Integer
            | EOL
@@ -59,8 +67,11 @@ tokeniser =
        toks <- many $ do tok <- choice [try $ symStr "public" Public,
                                         try $ symStr "let" Let,
                                         try $ symStr "in" In,
+                                        try $ symStr "case" Case,
+                                        try $ symStr "of" Of,
                                         try ident_tok,
                                         try number_tok,
+                                        try $ symStr "->" RightArrow,
                                         try $ symStr "<=" LeftAngleEquals,
                                         try $ symStr ">=" RightAngleEquals,
                                         try $ symStr "!=" BangEquals,
@@ -75,6 +86,7 @@ tokeniser =
                                         sym ',' Comma,
                                         sym '(' OpenParan,
                                         sym ')' CloseParan,
+                                        sym '_' Underscore,
                                         sym '\n' EOL]
 
                          skipWSOrComment
@@ -82,7 +94,7 @@ tokeniser =
        eof
        return toks
 
-ident_tok = do first <- letter <|> (char '_')
+ident_tok = do first <- letter
                rest <- many (letter <|> (char '_') <|> digit)
                pos <- getPosition
                return $ (TokenPos (Ident (first:rest)) pos)
@@ -121,8 +133,17 @@ let_ = hlToken Let
 in_ :: Stream s Identity TokenPos => Parsec s u ()
 in_ = hlToken In
 
+case_ :: Stream s Identity TokenPos => Parsec s u ()
+case_ = hlToken Case
+
+of_ :: Stream s Identity TokenPos => Parsec s u ()
+of_ = hlToken Of
+
 equals :: Stream s Identity TokenPos => Parsec s u ()
 equals = hlToken Equals
+
+rightArrow :: Stream s Identity TokenPos => Parsec s u ()
+rightArrow = hlToken RightArrow
 
 plus :: Stream s Identity TokenPos => Parsec s u ()
 plus = hlToken Plus
@@ -162,6 +183,9 @@ openParen = hlToken OpenParan
 
 closeParen :: Stream s Identity TokenPos => Parsec s u ()
 closeParen = hlToken CloseParan
+
+underscore :: Stream s Identity TokenPos => Parsec s u ()
+underscore = hlToken Underscore
 
 ident :: Stream s Identity TokenPos => Parsec s u String
 ident = token showToken nextPos testIdent

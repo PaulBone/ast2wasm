@@ -32,6 +32,11 @@ func2SExpr (W.Func name0 rettype0 params0 locals0 instrs0) =
           instrs = map instr2SExpr instrs0
 
 instr2SExpr (W.Atomic instr) = atomicInstr2SExpr instr
+instr2SExpr (W.If types0 true0 false0) =
+        WFSList [WFSAtom If, types, true, false]
+    where types = makeList Result (map type2SExpr types0)
+          true = makeInstrList Then true0
+          false = makeInstrList Else false0
 
 atomicInstr2SExpr :: W.AtomicInstr -> WellFormedSExpr Atom
 atomicInstr2SExpr (W.Add W.I32) = WFSAtom AddI32
@@ -63,6 +68,10 @@ atomicInstr2SExpr W.Return = WFSAtom Return
 
 type2SExpr W.I32 = WFSAtom I32
 
+makeList a l = WFSList ((WFSAtom a):l)
+
+makeInstrList a l = makeList a (map instr2SExpr l)
+
 -----------------
 -- SExpr atoms --
 -----------------
@@ -73,6 +82,9 @@ data Atom = Module
           | Param
           | Local
           | Result
+          | If
+          | Then
+          | Else
           | I32
           | AddI32
           | SubI32
@@ -106,6 +118,9 @@ instance Show Atom where
     show Param = "param"
     show Local = "local"
     show Result = "result"
+    show If = "if"
+    show Then = "then"
+    show Else = "else"
     show I32 = "i32"
     show AddI32 = "i32.add"
     show SubI32 = "i32.sub"

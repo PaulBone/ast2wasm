@@ -16,6 +16,7 @@ data Type = I32
     deriving Show
 
 data Instr = Atomic AtomicInstr
+           | If [Type] [Instr] [Instr]
     deriving Show
 
 data AtomicInstr = Add Type

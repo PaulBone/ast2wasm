@@ -18,10 +18,18 @@ data Visability = Public
 
 data Expr = BOp Op Expr Expr
           | Let String Expr Expr
+          | Case Expr [PatExpr]
           | Call String [Expr]
           | Var String
           | Lit32 Integer -- using Integer makes some codegen easier
                           -- (avoiding incidental complexity)
+    deriving Show
+
+data PatExpr = PatExpr Pattern Expr
+    deriving Show
+
+data Pattern = Number Integer
+             | Wildcard
     deriving Show
 
 data Op = Add

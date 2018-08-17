@@ -29,7 +29,7 @@ funcP = try $ do vis <- option Private (public >> return Public)
                  eol
                  return $ Func fname vis fargs fbody
 
-expr = let_in_expr <|> bop_expr
+expr = let_in_expr <|> case_expr <|> bop_expr
 
 let_in_expr = do let_
                  var <- ident
@@ -38,6 +38,18 @@ let_in_expr = do let_
                  in_
                  in_expr <- expr
                  return $ Let var let_expr in_expr
+
+case_expr = do case_
+               e1 <- expr
+               of_
+               pats <- many1 case_pattern
+               return $ Case e1 pats
+    where case_pattern =
+            do p <- (number >>= (return . Number)) <|>
+                    (underscore >> (return Wildcard))
+               rightArrow
+               e <- expr
+               return $ PatExpr p e
 
 bop_expr = do e1 <- expr0
               -- This could be a binary operation, or just a simple
