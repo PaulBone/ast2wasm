@@ -75,12 +75,3 @@ While researching this I also found, but didn't use:
  + Environments?
 
 
-## FAQ
-
-Questions that people have asked me I will need to include in the
-presentation.
-
- * script tag
- * Loading and linking multiple modules
-
-
