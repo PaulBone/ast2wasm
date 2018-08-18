@@ -7,6 +7,7 @@ all : ctof.wasm \
 	calls.wasm \
 	quad.wasm \
 	let.wasm \
+	fib.wasm \
 	.cabal-sandbox/bin/ast2wasm
 
 %.wasm : %.wat $(WAT2WASM)
