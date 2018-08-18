@@ -9,27 +9,21 @@ all : ctof.wasm \
 	let.wasm \
 	.cabal-sandbox/bin/ast2wasm
 
-%.wasm : %.wat wat2wasm
+%.wasm : %.wat $(WAT2WASM)
 	$(WAT2WASM) $<
+	touch $@
 
 %.wat : %.hl .cabal-sandbox/bin/ast2wasm
 	.cabal-sandbox/bin/ast2wasm < $< > $@
 
-.PHONY: wat2wasm
-wat2wasm : .wat2wasm_guard
-
-.wat2wasm_guard :
+$(WAT2WASM) :
 	-mkdir wabt/build
 	( cd wabt/build/; cmake -DBUILD_TESTS=OFF .. ; make wat2wasm )
-	touch .wat2wasm_guard
 
-.cabal-sandbox/bin/ast2wasm: sandbox $(find *.hs)
+.cabal-sandbox/bin/ast2wasm: .cabal-sandbox $(wildcard *.hs)
 	cabal install -j
 
-.PHONY: sandbox
-sandbox: .sandbox_guard
-
-.sandbox_guard: ast2wasm.cabal
+.cabal-sandbox: ast2wasm.cabal
 	cabal sandbox init
 	touch .sandbox_guard
 
