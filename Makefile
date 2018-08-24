@@ -8,6 +8,7 @@ all : ctof.wasm \
 	quad.wasm \
 	let.wasm \
 	fib.wasm \
+	examples.wasm \
 	.cabal-sandbox/bin/ast2wasm
 
 %.wasm : %.wat $(WAT2WASM)

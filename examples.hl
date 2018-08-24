@@ -1,0 +1,11 @@
+
+-- Celcius to farenheit
+public ctof c = ((c * 9) / 5) + 32
+
+-- Farenheit to celcius
+public ftoc f = ((f - 32) * 5) / 9
+
+-- HL has no operator precidence, be careful!
+
+public fib n = let test = n < 2 in case test of 1 -> 1 0 -> fib(n - 1) + fib(n - 2)
+
