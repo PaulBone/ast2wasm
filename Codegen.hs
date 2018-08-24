@@ -121,8 +121,8 @@ codegen_expr info (Ast.Let var in_expr let_expr) =
        set_code <- case S.lookup (cgi_locals info) var of
            Just local_id -> return $ W.Atomic $ W.SetLocal local_id
            Nothing -> Left $ "No such local variable '" ++ var ++ "'"
-       expr_code <- codegen_expr info let_expr
-       return $ in_code ++ [set_code] ++ expr_code
+       let_code <- codegen_expr info let_expr
+       return $ in_code ++ [set_code] ++ let_code
 
 codegen_expr info (Ast.Call callee args) =
     do argscode <- liftM concat $ mapM (codegen_expr info) args
