@@ -18,6 +18,14 @@ and try it out.  Several example programs are in the files with the .hl
 file extension.
 
 
+## Presentation
+
+I developed this as an example of a code generator for a
+<a href="https://paul.bone.id.au/pub/pbone-2018-ast2wasm/">talk</a>
+I gave at
+<a href="http://www.composeconference.org/">Compose :: Melbourne 2018</a>.
+
+
 ## Dependencies
 
 You'll need some kind of C++ toolchain, whatever wabt (see below) requires.
@@ -48,13 +56,18 @@ You should be able to build the toolkit and this with:
 It may need more tools or libraries installed such as cmake, C header files
 and libraries.
 
+## Bug
+
+Note that there is a bug with how the final pattern-expression is generated
+for case expressions.  I will fix this soon.
+
 
 ## Links
 
 I used these resources:
 
- * [Web Assembly website](http://webassembly.org)
- * [Wasm text format and instruction list](https://webassembly.github.io/spec/core/text/instructions.html)
+ * [WebAssembly website](http://webassembly.org)
+ * [WebAssembly specification](https://webassembly.github.io/spec/core/)
  * [Wasm text format examples](https://github.com/WebAssembly/spec/tree/master/test/core)
  * [MDN docs](https://developer.mozilla.org/en-US/docs/WebAssembly) Mostly
   JavaScript API for loading modules.
@@ -65,12 +78,10 @@ While researching this I also found, but didn't use:
  * [wasm Haskell package](https://hackage.haskell.org/package/wasm)
 
 
-## TODO
+## This could be extended in these ways:
 
- + Case selections
  + Basic type checks
- * add ctof/ftoc example
- * Benchmark with JS and native code, use a suitable benchmark
+ * Higher order values/calls
  + Cons cells?
  + Environments?
 
