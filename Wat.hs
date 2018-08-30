@@ -37,6 +37,7 @@ instr2SExpr (W.If types0 true0 false0) =
     where types = makeList Result (map type2SExpr types0)
           true = makeInstrList Then true0
           false = makeInstrList Else false0
+instr2SExpr W.Unreachable = WFSAtom Unreachable
 
 atomicInstr2SExpr :: W.AtomicInstr -> WellFormedSExpr Atom
 atomicInstr2SExpr (W.Add W.I32) = WFSAtom AddI32
@@ -85,6 +86,7 @@ data Atom = Module
           | If
           | Then
           | Else
+          | Unreachable
           | I32
           | AddI32
           | SubI32
@@ -121,6 +123,7 @@ instance Show Atom where
     show If = "if"
     show Then = "then"
     show Else = "else"
+    show Unreachable = "unreachable"
     show I32 = "i32"
     show AddI32 = "i32.add"
     show SubI32 = "i32.sub"

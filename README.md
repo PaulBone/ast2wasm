@@ -56,12 +56,6 @@ You should be able to build the toolkit and this with:
 It may need more tools or libraries installed such as cmake, C header files
 and libraries.
 
-## Bug
-
-Note that there is a bug with how the final pattern-expression is generated
-for case expressions.  I will fix this soon.
-
-
 ## Links
 
 I used these resources:

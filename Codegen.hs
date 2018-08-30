@@ -168,25 +168,25 @@ codegen_expr (Ast.Lit32 n) = return $ [W.Atomic $ W.ConstI W.I32 n]
 
 data CaseCode = CaseCode
                     -- Instructions to prepare and test for the condition,
-                    -- laving an I32 on the top-of-stack.
-                    [W.Instr]
+                    -- laving an I32 on the top-of-stack.  Nothing if the
+                    -- instructions are always executed
+                    (Maybe [W.Instr])
                     -- True block (code to execute if true).
                     [W.Instr]
 
 codegen_case val (Ast.PatExpr pat expr) =
     do block_instrs <- codegen_expr expr
        return $ CaseCode (make_prep_test_instrs pat) block_instrs
-    where make_prep_test_instrs (Ast.Number n) =
+    where make_prep_test_instrs (Ast.Number n) = Just $
             map W.Atomic [W.GetLocal val, W.ConstI W.I32 n, W.Eq W.I32]
-          make_prep_test_instrs Ast.Wildcard =
-            [W.Atomic $ W.ConstI W.I32 1]
+          make_prep_test_instrs Ast.Wildcard = Nothing
 
 make_if_chain :: [CaseCode] -> [W.Instr]
-make_if_chain [] = error "Empty case list"
-make_if_chain ((CaseCode _test instrs):[]) = instrs
-make_if_chain ((CaseCode test instrs):x:xs) =
-    let elsecode = make_if_chain (x:xs) in
-        test ++ [W.If [W.I32] instrs elsecode]
+make_if_chain [] = [W.Unreachable]
+make_if_chain ((CaseCode (Just test) instrs):xs) =
+    test ++ [W.If [W.I32] instrs elsecode]
+    where elsecode = make_if_chain xs
+make_if_chain ((CaseCode Nothing instrs):_) = instrs
 
 ---------------------------------------------------------------------------
 

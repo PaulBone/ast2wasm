@@ -17,6 +17,7 @@ data Type = I32
 
 data Instr = Atomic AtomicInstr
            | If [Type] [Instr] [Instr]
+           | Unreachable
     deriving Show
 
 data AtomicInstr = Add Type
